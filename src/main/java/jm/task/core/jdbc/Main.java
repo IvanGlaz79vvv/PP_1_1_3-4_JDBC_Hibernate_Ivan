@@ -67,19 +67,11 @@
 package jm.task.core.jdbc;
 
 import jm.task.core.jdbc.service.UserServiceImpl;
-import jm.task.core.jdbc.util.Util;
-
-import java.sql.Connection;
 
 public class Main {
     public static void main(String[] args) {
-        Util util = new Util();
-        util.runConnection();
-
-// Test Connection ...
-        System.out.println("Тест соединения (ОК: 2): " + Connection.TRANSACTION_READ_COMMITTED);
-
         UserServiceImpl userService = new UserServiceImpl();
+
         userService.createUsersTable();
 
         userService.saveUser("Александр", "Пушкин", (byte) 3);
