@@ -1,7 +1,9 @@
 package jm.task.core.jdbc.dao;
 
+import com.mysql.cj.jdbc.exceptions.MySQLTransactionRollbackException;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+
 import java.sql.*;
 import java.util.*;
 
@@ -23,21 +25,25 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void createUsersTable() {
         try (Statement statement = conn.createStatement()) {
+//            conn.setAutoCommit(false);
             statement.executeUpdate(CREATE);
-        } catch (SQLException | NullPointerException e) {
-            System.out.println("Ошибка createUsersTable");
-            e.printStackTrace();
+        } catch (SQLException e) {
+//            conn.rollback();
+            System.out.println("Ошибка SQLException");
         }
+//        conn.setAutoCommit(true);
     }
 
-    public void dropUsersTable() {
+    public void dropUsersTable() throws SQLException {
         try (Statement statement = conn.createStatement()) {
+
             statement.executeUpdate(DROP);
             System.out.println("Таблица удалена");
-        } catch (SQLException | NullPointerException e) {
-            System.out.println("Ошибка dropUsersTable");
-            e.printStackTrace();
+        } catch (SQLException e) {
+            conn.rollback();
+            System.out.println("Ошибка conn.rollback();");
         }
+        conn.setAutoCommit(true);
     }
 
 

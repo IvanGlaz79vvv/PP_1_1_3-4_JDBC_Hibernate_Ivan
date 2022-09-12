@@ -68,8 +68,10 @@ package jm.task.core.jdbc;
 
 import jm.task.core.jdbc.service.UserServiceImpl;
 
+import java.sql.SQLException;
+
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
         UserServiceImpl userService = new UserServiceImpl();
 
         userService.createUsersTable();
@@ -79,12 +81,12 @@ public class Main {
         userService.saveUser("Владимир", "ХХХ", (byte) 60);
         userService.saveUser("Иван", "Грозный", (byte) 20);
 
-        userService.removeUserById(3);
+//        userService.removeUserById(3);
 
         userService.getAllUsers();
 
-        userService.cleanUsersTable();
+//        userService.cleanUsersTable();
 
-        userService.dropUsersTable();
+//        userService.dropUsersTable();
     }
 }

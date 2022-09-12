@@ -3,19 +3,40 @@ package jm.task.core.jdbc.service;
 import jm.task.core.jdbc.dao.UserDao;
 import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
+import jm.task.core.jdbc.util.Util;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.*;
 
 public class UserServiceImpl implements UserService {
     UserDao userDao = new UserDaoJDBCImpl();
+    private final Connection connection = Util.getConnection();
 
 
     public void createUsersTable() {
-        userDao.createUsersTable();
-        System.out.println("Таблица создана");
+        try {
+            connection.setAutoCommit(false);
+            userDao.createUsersTable();
+            System.out.println("Таблица создана");
+        } catch (SQLException e) {
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            try {
+                connection.setAutoCommit(true);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 
-    public void dropUsersTable() {
+    public void dropUsersTable() throws SQLException {
         userDao.dropUsersTable();
     }
 
