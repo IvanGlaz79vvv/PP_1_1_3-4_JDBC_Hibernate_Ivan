@@ -3,7 +3,7 @@ package jm.task.core.jdbc.util;
 import java.sql.*;
 
 public class Util {
-    public static final String URL = "jdbc:mysql://localhost:3306/newdbIvan";
+    public static final String URL = "jdbc:mysql://localhost:3306/newbd";
     public static final String NAME = "root";
     public static final String PASSWORD = "root";
 

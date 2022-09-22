@@ -1,7 +1,10 @@
 package jm.task.core.jdbc.dao;
 
+import com.mysql.cj.jdbc.exceptions.MySQLTransactionRollbackException;
+import com.mysql.cj.x.protobuf.MysqlxSql;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
+
 import java.sql.*;
 import java.util.*;
 
@@ -23,10 +26,27 @@ public class UserDaoJDBCImpl implements UserDao {
 
     public void createUsersTable() {
         try (Statement statement = conn.createStatement()) {
+
+            conn.setAutoCommit(false);
+
             statement.executeUpdate(CREATE);
+
+            conn.commit();
         } catch (SQLException | NullPointerException e) {
-            System.out.println("Ошибка createUsersTable");
-            e.printStackTrace();
+            try{
+            conn.rollback();
+        } catch (MySQLTransactionRollbackException ex) {
+            ex.printStackTrace();
+            System.out.println("Ошибка MySQLTransactionRollbackException");
+        } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 
