@@ -5,6 +5,7 @@ import jm.task.core.jdbc.dao.UserDaoJDBCImpl;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
+import javax.naming.Name;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
