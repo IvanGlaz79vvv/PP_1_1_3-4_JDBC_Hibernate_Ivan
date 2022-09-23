@@ -83,12 +83,12 @@ public class Main {
         userService.saveUser("Владимир", "ХХХ", (byte) 60);
         userService.saveUser("Иван", "Грозный", (byte) 20);
 
-//        userService.removeUserById(3);
+        userService.removeUserById(3);
 
         userService.getAllUsers();
 
-//        userService.cleanUsersTable();
-//
-//        userService.dropUsersTable();
+        userService.cleanUsersTable();
+
+        userService.dropUsersTable();
     }
 }
