@@ -1,7 +1,5 @@
 package jm.task.core.jdbc.dao;
 
-import com.mysql.cj.jdbc.exceptions.MySQLTransactionRollbackException;
-import com.mysql.cj.x.protobuf.MysqlxSql;
 import jm.task.core.jdbc.model.User;
 import jm.task.core.jdbc.util.Util;
 
@@ -49,34 +47,34 @@ public class UserDaoJDBCImpl implements UserDao {
         }
     }
 
-        public void dropUsersTable () {
-            try (Statement statement = conn.createStatement()) {
-                conn.setAutoCommit(false);
-                statement.executeUpdate(DROP);
-                System.out.println("Таблица удалена");
-                conn.commit();
-            } catch (SQLException | NullPointerException e) {
-                try {
-                    conn.rollback();
-                    System.out.println("Запущен rollback()");
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            } finally {
-                try {
-                    conn.setAutoCommit(true);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    System.out.println("Ошибка setAutoCommit(true)");
-                }
+    public void dropUsersTable() {
+        try (Statement statement = conn.createStatement()) {
+            conn.setAutoCommit(false);
+            statement.executeUpdate(DROP);
+            System.out.println("Таблица удалена");
+            conn.commit();
+        } catch (SQLException | NullPointerException e) {
+            try {
+                conn.rollback();
+                System.out.println("Запущен rollback()");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Ошибка setAutoCommit(true)");
             }
         }
+    }
 
-        public void saveUser (String name, String lastName,byte age){
+    public void saveUser(String name, String lastName, byte age) {
+        try {
+            conn.setAutoCommit(false);
             try (PreparedStatement preparedStatement =
                          conn.prepareStatement(SAVE)) {
-                conn.setAutoCommit(false);
-
                 preparedStatement.setString(1, name);
                 preparedStatement.setString(2, lastName);
                 preparedStatement.setByte(3, age);
@@ -98,67 +96,77 @@ public class UserDaoJDBCImpl implements UserDao {
                     System.out.println("Ошибка setAutoCommit(true)");
                 }
             }
-        }
-
-        public void removeUserById ( long id){
-            try (PreparedStatement preparedStatement =
-                         conn.prepareStatement(DELETE);) {   /*DELETE FROM TableIvan WHERE id = ?*/
-                preparedStatement.setLong(1, id);
-                preparedStatement.executeUpdate();
-            } catch (SQLException | NullPointerException e) {
-                try {
-                    conn.rollback();
-                    System.out.println("Запущен rollback()");
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            } finally {
-                try {
-                    conn.setAutoCommit(true);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    System.out.println("Ошибка setAutoCommit(true)");
-                }
-            }
-        }
-
-
-        public List<User> getAllUsers () {
-            List<User> arrayListTableIvan = new ArrayList<>();
-            try (ResultSet resultSet = conn.createStatement().executeQuery(SELECTALL)) {
-                while (resultSet.next()) {
-                    User user = new User(resultSet.getString("name"),
-                            resultSet.getString("last_name"),
-                            resultSet.getByte("age"));
-                    user.setId(resultSet.getLong("id"));
-
-                    arrayListTableIvan.add(user);
-                }
-            } catch (SQLException | NullPointerException e) {
-                try {
-                    conn.rollback();
-                    System.out.println("Запущен rollback()");
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                }
-            } finally {
-                try {
-                    conn.setAutoCommit(true);
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                    System.out.println("Ошибка setAutoCommit(true)");
-                }
-            }
-
-            return arrayListTableIvan;
-        }
-
-        public void cleanUsersTable () {
-            try (Statement statement = conn.createStatement()) {
-
-                statement.executeUpdate(TRUNCATE);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
+
+    public void removeUserById(long id) {
+        try {
+            conn.setAutoCommit(false);
+            try (PreparedStatement preparedStatement =
+                         conn.prepareStatement(DELETE);
+            ) {      /*DELETE FROM TableIvan WHERE id = ?*/
+                preparedStatement.setLong(1, id);
+                preparedStatement.executeUpdate();
+                conn.commit();
+            } catch (SQLException | NullPointerException e) {
+                try {
+                    conn.rollback();
+                    System.out.println("Запущен rollback()");
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                }
+            } finally {
+                try {
+                    conn.setAutoCommit(true);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    System.out.println("Ошибка setAutoCommit(true)");
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public List<User> getAllUsers() {
+        List<User> arrayListTableIvan = new ArrayList<>();
+        try (ResultSet resultSet = conn.createStatement().executeQuery(SELECTALL)) {
+            while (resultSet.next()) {
+                User user = new User(resultSet.getString("name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getByte("age"));
+                user.setId(resultSet.getLong("id"));
+
+                arrayListTableIvan.add(user);
+            }
+        } catch (SQLException | NullPointerException e) {
+            try {
+                conn.rollback();
+                System.out.println("Запущен rollback()");
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } finally {
+            try {
+                conn.setAutoCommit(true);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                System.out.println("Ошибка setAutoCommit(true)");
+            }
+        }
+
+        return arrayListTableIvan;
+    }
+
+    public void cleanUsersTable() {
+        try (Statement statement = conn.createStatement()) {
+
+            statement.executeUpdate(TRUNCATE);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
